@@ -7,7 +7,7 @@
 
 <html class="theme-next mist use-motion" lang="zh-Hans">
 <head>
-  <meta charset="UTF-8"/>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 <meta name="theme-color" content="#222">
@@ -138,7 +138,7 @@
 
 
 
-  <title>ASIC Garden</title>
+  <title>ASIC Garden</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -163,7 +163,7 @@
     
   
 
-  <div class="container sidebar-position-left 
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left 
    page-home 
  ">
     <div class="headband"></div>
@@ -281,6 +281,158 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://asicwhale.github.io/2018/05/08/matlab_freqz/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="asicwhale">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ASIC Garden">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/05/08/matlab_freqz/" itemprop="url">matlab分析频率响应</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-08T21:10:31+08:00">
+                2018-05-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/DSP/" itemprop="url" rel="index">
+                    <span itemprop="name">DSP</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>matlab如何分析滤波器的频率响应呢？ 可以用freqz函数。 matlab的说明文档中的描述如下：</p>
+<blockquote>
+<p>h = freqz(b,a,w) returns the frequency response vector h calculated at the frequencies (in radians per sample) supplied by the vector w. The vector w can have any length.</p>
+</blockquote>
+<p>举个例子， 比如下面的滤波器：</p>
+<p>$X( e^{j\omega} ) =\frac{0.008-0.033e^{-j\omega} + 0.05e^{-j2\omega} - 0.0333e^{-j3\omega}+0.008e^{-j4\omega}} {1+2.37e^{-j\omega}+2.7e^{-j2\omega}+1.6e^{-j3\omega}+0.41e^{-j4\omega}}$</p>
+<p>b——-分子的系数，以向量的形式输入；a分母的系数，以向量的形式输入 ：</p>
+<p>matlab的代码如下：</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">k = input(<span class="string">'Number of frequency points = '</span>);</span><br><span class="line"><span class="comment">% Read in the numerator and denominator coefficients</span></span><br><span class="line">num = input(<span class="string">'Numerator coefficients = '</span>);</span><br><span class="line">den = input(<span class="string">'Denominator coefficients = '</span>);</span><br><span class="line"><span class="comment">% Compute the frequency response</span></span><br><span class="line">w = <span class="number">0</span>:<span class="built_in">pi</span>/(k<span class="number">-1</span>):<span class="built_in">pi</span>;</span><br><span class="line">h = freqz(num, den, w);</span><br><span class="line"><span class="comment">% Plot the frequency response</span></span><br><span class="line">subplot(<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>)</span><br><span class="line">plot(w/<span class="built_in">pi</span>,<span class="built_in">real</span>(h));grid</span><br><span class="line">title(<span class="string">'Real part'</span>)</span><br><span class="line">xlabel(<span class="string">'\omega/\pi'</span>); ylabel(<span class="string">'Amplitude'</span>)</span><br><span class="line">subplot(<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>)</span><br><span class="line">plot(w/<span class="built_in">pi</span>,<span class="built_in">imag</span>(h));grid</span><br><span class="line">title(<span class="string">'Imaginary part'</span>)</span><br><span class="line">xlabel(<span class="string">'\omega/\pi'</span>); ylabel(<span class="string">'Amplitude'</span>)</span><br><span class="line">subplot(<span class="number">2</span>,<span class="number">2</span>,<span class="number">3</span>)</span><br><span class="line">plot(w/<span class="built_in">pi</span>,<span class="built_in">abs</span>(h));grid</span><br><span class="line">title(<span class="string">'Magnitude Spectrum'</span>)</span><br><span class="line">xlabel(<span class="string">'\omega/\pi'</span>); ylabel(<span class="string">'Magnitude'</span>)</span><br><span class="line">subplot(<span class="number">2</span>,<span class="number">2</span>,<span class="number">4</span>)</span><br><span class="line">plot(w/<span class="built_in">pi</span>,<span class="built_in">angle</span>(h));grid</span><br><span class="line">title(<span class="string">'Phase Spectrum'</span>)</span><br><span class="line">   xlabel(<span class="string">'\omega/\pi'</span>); ylabel(<span class="string">'Phase, radians'</span>)</span><br></pre></td></tr></table></figure>
+<p>那么可以画出幅频响应和相频响应如下图所示：</p>
+<img src="/2018/05/08/matlab_freqz/freqz.png" title="幅频响应和相频响应">  
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://asicwhale.github.io/2018/05/06/start/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -322,6 +474,28 @@
             
           </span>
 
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/随笔/" itemprop="url" rel="index">
+                    <span itemprop="name">随笔</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -436,22 +610,31 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-count">2</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
           
 
           
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
 
           
             
             
             <div class="site-state-item site-state-tags">
-              
-                <span class="site-state-item-count">1</span>
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">2</span>
                 <span class="site-state-item-name">标签</span>
-              
+              </a>
             </div>
           
 
@@ -628,6 +811,45 @@
   
 
   
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
 
   
 
