@@ -398,8 +398,7 @@
 <li>归一化</li>
 </ul>
 <p>计算方法如下面的公式：</p>
-<p>​                            <script type="math/tex">log_2(x) =  log_2(2^n\cdot2^{-n}\cdot x)=n+log_2(2^{-n}\cdot x)</script></p>
-<p>如果我们选择$n$ 使得$(2^{-n}\cdot x) \in [1,2)$,  那么n就是log结果的整数部分， 可以通过优先编码器得到。 然后经过barrel shifter得到$2^{-n}\cdot x$.  </p>
+<script type="math/tex; mode=display">log_2(x) =  log_2(2^n\cdot2^{-n}\cdot x)=n+log_2(2^{-n}\cdot x)</script><p>如果我们选择$n$ 使得$(2^{-n}\cdot x) \in [1,2)$,  那么n就是log结果的整数部分， 可以通过优先编码器得到。 然后经过barrel shifter得到$2^{-n}\cdot x$.  </p>
 <p>最后用LUT计算低bit， 也就是log的小数部分。 因为我们把数值范围进行了归一化， 这样LUT就会比较小了。</p>
 <p>电路的结构如图所示：</p>
 <p>​                        <img src="/2018/05/13/ASIC-basic-circuit-0/log2.svg"></p>

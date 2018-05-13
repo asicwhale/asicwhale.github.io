@@ -105,7 +105,7 @@
 <meta property="og:image" content="http://asicwhale.github.io/2018/05/13/ASIC-basic-circuit-0/ex1_timing.svg">
 <meta property="og:image" content="http://asicwhale.github.io/2018/05/13/ASIC-basic-circuit-0/log2.svg">
 <meta property="og:image" content="http://asicwhale.github.io/2018/05/13/ASIC-basic-circuit-0/log_res.svg">
-<meta property="og:updated_time" content="2018-05-13T12:30:35.055Z">
+<meta property="og:updated_time" content="2018-05-13T13:01:02.524Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="基础电路分析 （一）">
 <meta name="twitter:description" content="决定写一些基础电路方面的笔记， 免得自己把一些很基础的概念、电路忘得一干二净。 这篇文章就介绍三个， 并且这三个电路经常出现在笔试或者面试。 统计电路我们知道matlab有一个函数hist， 可以画出随机数的分布， 其实这个函数用电路也可以实现。看下面一个例子： 假设每个周期输入一个16bit的随机数， enable 和capture_data指定一个数据， 假设是W， 电路要统计W之前出现的次数">
@@ -398,8 +398,7 @@
 <li>归一化</li>
 </ul>
 <p>计算方法如下面的公式：</p>
-<p>​                            <script type="math/tex">log_2(x) =  log_2(2^n\cdot2^{-n}\cdot x)=n+log_2(2^{-n}\cdot x)</script></p>
-<p>如果我们选择$n$ 使得$(2^{-n}\cdot x) \in [1,2)$,  那么n就是log结果的整数部分， 可以通过优先编码器得到。 然后经过barrel shifter得到$2^{-n}\cdot x$.  </p>
+<script type="math/tex; mode=display">log_2(x) =  log_2(2^n\cdot2^{-n}\cdot x)=n+log_2(2^{-n}\cdot x)</script><p>如果我们选择$n$ 使得$(2^{-n}\cdot x) \in [1,2)$,  那么n就是log结果的整数部分， 可以通过优先编码器得到。 然后经过barrel shifter得到$2^{-n}\cdot x$.  </p>
 <p>最后用LUT计算低bit， 也就是log的小数部分。 因为我们把数值范围进行了归一化， 这样LUT就会比较小了。</p>
 <p>电路的结构如图所示：</p>
 <p>​                        <img src="/2018/05/13/ASIC-basic-circuit-0/log2.svg"></p>
