@@ -94,21 +94,20 @@
 
 
 
-<meta name="description" content="虽然是做ASIC design的，但似乎有点必要学习一下UVM。 就逐步记录一下UVM中的一些重要的内容和学习笔记。 本篇就记录一下UVM phase的理解。 UVM phase简介UVM的phase实际上提供了仿真过程的一种同步机制。可以大体上分成三种：  Build time phases Run time phases Clean-up phase  如下图所示：  对于function p">
+<meta name="description" content="本篇主要介绍uvm环境中的driver。   driver的主要作用是从squencer获取transaction， 然后驱动DUT的interface。如下图所示：  Driver的编写 从uvm_driver派生出自定义的class， 比如说是my_driver, 然后用factory机制注册， 并且创建 “new” 函数， 如下面代码所示  12345678910// my_driver i">
 <meta name="keywords" content="UVM">
 <meta property="og:type" content="article">
-<meta property="og:title" content="UVM中的phase">
-<meta property="og:url" content="http://asicwhale.github.io/2018/07/07/uvm-phase/index.html">
+<meta property="og:title" content="uvm driver介绍">
+<meta property="og:url" content="http://asicwhale.github.io/2018/07/10/uvm-driver/index.html">
 <meta property="og:site_name" content="ASIC Notes">
-<meta property="og:description" content="虽然是做ASIC design的，但似乎有点必要学习一下UVM。 就逐步记录一下UVM中的一些重要的内容和学习笔记。 本篇就记录一下UVM phase的理解。 UVM phase简介UVM的phase实际上提供了仿真过程的一种同步机制。可以大体上分成三种：  Build time phases Run time phases Clean-up phase  如下图所示：  对于function p">
+<meta property="og:description" content="本篇主要介绍uvm环境中的driver。   driver的主要作用是从squencer获取transaction， 然后驱动DUT的interface。如下图所示：  Driver的编写 从uvm_driver派生出自定义的class， 比如说是my_driver, 然后用factory机制注册， 并且创建 “new” 函数， 如下面代码所示  12345678910// my_driver i">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://asicwhale.github.io/2018/07/07/uvm-phase/uvm_phase.png">
-<meta property="og:image" content="http://asicwhale.github.io/2018/07/07/uvm-phase/run_phase.png">
-<meta property="og:updated_time" content="2018-07-07T13:57:41.378Z">
+<meta property="og:image" content="http://asicwhale.github.io/2018/07/10/uvm-driver/uvm-driver-env.png">
+<meta property="og:updated_time" content="2018-07-10T13:17:53.132Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="UVM中的phase">
-<meta name="twitter:description" content="虽然是做ASIC design的，但似乎有点必要学习一下UVM。 就逐步记录一下UVM中的一些重要的内容和学习笔记。 本篇就记录一下UVM phase的理解。 UVM phase简介UVM的phase实际上提供了仿真过程的一种同步机制。可以大体上分成三种：  Build time phases Run time phases Clean-up phase  如下图所示：  对于function p">
-<meta name="twitter:image" content="http://asicwhale.github.io/2018/07/07/uvm-phase/uvm_phase.png">
+<meta name="twitter:title" content="uvm driver介绍">
+<meta name="twitter:description" content="本篇主要介绍uvm环境中的driver。   driver的主要作用是从squencer获取transaction， 然后驱动DUT的interface。如下图所示：  Driver的编写 从uvm_driver派生出自定义的class， 比如说是my_driver, 然后用factory机制注册， 并且创建 “new” 函数， 如下面代码所示  12345678910// my_driver i">
+<meta name="twitter:image" content="http://asicwhale.github.io/2018/07/10/uvm-driver/uvm-driver-env.png">
 
 
 
@@ -137,13 +136,13 @@
 
 
 
-  <link rel="canonical" href="http://asicwhale.github.io/2018/07/07/uvm-phase/"/>
+  <link rel="canonical" href="http://asicwhale.github.io/2018/07/10/uvm-driver/"/>
 
 
 
 
 
-  <title>UVM中的phase | ASIC Notes</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title>uvm driver介绍 | ASIC Notes</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -284,7 +283,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://asicwhale.github.io/2018/07/07/uvm-phase/">
+    <link itemprop="mainEntityOfPage" href="http://asicwhale.github.io/2018/07/10/uvm-driver/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="asicwhale">
@@ -301,7 +300,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">UVM中的phase</h1>
+          <h1 class="post-title" itemprop="name headline">uvm driver介绍</h1>
         
 
         <div class="post-meta">
@@ -313,8 +312,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-07T20:48:01+08:00">
-                2018-07-07
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-10T20:43:00+08:00">
+                2018-07-10
               </time>
             
 
@@ -384,44 +383,32 @@
       
 
       
-        <p>虽然是做ASIC design的，但似乎有点必要学习一下UVM。 就逐步记录一下UVM中的一些重要的内容和学习笔记。 本篇就记录一下UVM phase的理解。</p>
-<h1 id="UVM-phase简介"><a href="#UVM-phase简介" class="headerlink" title="UVM phase简介"></a>UVM phase简介</h1><p>UVM的phase实际上提供了仿真过程的一种同步机制。可以大体上分成三种：</p>
-<ul>
-<li>Build time phases</li>
-<li>Run time phases</li>
-<li>Clean-up phase</li>
-</ul>
-<p>如下图所示：</p>
-<img src="/2018/07/07/uvm-phase/uvm_phase.png">
-<p>对于function phase来说是不消耗仿真时间的， 而task  phase消耗仿真时间。</p>
-<p>下面分别介绍这三种phase：</p>
-<ol>
-<li><strong>build time phase</strong></li>
+        <p>本篇主要介绍uvm环境中的driver。  </p>
+<p>driver的主要作用是从squencer获取transaction， 然后驱动DUT的interface。如下图所示：</p>
+<img src="/2018/07/10/uvm-driver/uvm-driver-env.png">
+<h1 id="Driver的编写"><a href="#Driver的编写" class="headerlink" title="Driver的编写"></a>Driver的编写</h1><ol>
+<li>从uvm_driver派生出自定义的class， 比如说是my_driver, 然后用factory机制注册， 并且创建 “new” 函数， 如下面代码所示</li>
 </ol>
-<ul>
-<li>build_phase： function类型； 主要是实例化uvm_component</li>
-<li>connect_phase :  function类型；通过TLM端口连接不同的uvm_componet;</li>
-<li>end_of_elaboration_phase ： function类型； 显示uvm的拓扑结构和其他connection phase完成之后的函数；</li>
-<li>start_of_simulation_phase ： function类型， 使用较少， 或者用于显示uvm结构</li>
-</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// my_driver is user-given name for this class that has been derived from "uvm_driver"</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">my_driver</span> <span class="title">extends</span> <span class="title">uvm_driver</span>;</span></span><br><span class="line">    <span class="comment">// [Recommended] Makes this driver more re-usable</span></span><br><span class="line">    `uvm_component_utils (my_driver)</span><br><span class="line">    <span class="comment">// This is standard code for all components</span></span><br><span class="line">    <span class="function">function <span class="title">new</span> <span class="params">(<span class="built_in">string</span> name = <span class="string">"my_driver"</span>, uvm_component parent = null)</span></span>;</span><br><span class="line">      super.<span class="keyword">new</span> (name, parent);</span><br><span class="line">    endfunction</span><br><span class="line">    <span class="comment">// Code for rest of the steps come here</span></span><br><span class="line">endclass</span><br></pre></td></tr></table></figure>
 <ol>
-<li><strong>Run time phases</strong></li>
+<li>申明 vitual interface， 并在build_phase获取配置：</li>
 </ol>
-<ul>
-<li>run_phase:   task类型； 如上图所示， 和其他类型的run-time phase 并行执行。 driver 也是在这个phase开始驱动DUT</li>
-</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">  <span class="comment">// Actual interface object is later obtained by doing a get() call on uvm_config_db</span></span><br><span class="line">  <span class="keyword">virtual</span> if_name vif;</span><br><span class="line"> </span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> function <span class="keyword">void</span> <span class="title">build_phase</span> <span class="params">(uvm_phase phase)</span></span>;</span><br><span class="line">    super.build_phase (phase);</span><br><span class="line">     <span class="keyword">if</span> (! uvm_config_db #(<span class="keyword">virtual</span> if_name) :: get (<span class="keyword">this</span>, <span class="string">""</span>, <span class="string">"vif"</span>, vif)) begin</span><br><span class="line">        `uvm_fatal (get_type_name (), <span class="string">"Didn't get handle to virtual interface if_name"</span>)</span><br><span class="line">     end</span><br><span class="line">endfunction</span><br></pre></td></tr></table></figure>
 <ol>
-<li><strong>Clean up</strong></li>
+<li>编写run_phase</li>
 </ol>
-<ul>
-<li>extract_phase： function类型； 主要是从scoreboard中提取数据或者是关闭文件等；</li>
-<li>check_phase :  比较scoreboard和monitor观测到的数据；</li>
-<li>report_phase： 从checker 输出报告， 确认DUT是否通过测试；</li>
-<li>final_phase ： 关闭co-simulation端口， 关闭文件等。</li>
-</ul>
-<h1 id="Build-Phase"><a href="#Build-Phase" class="headerlink" title="Build Phase"></a>Build Phase</h1><p>uvm的结构类似树形，因为要实例化很多的uvm_componets,  所以build phase的过程是从上至下的。</p>
-<p>为了增加run phase的灵活性， uvm也提供了pre 和post   phase， 如下图所示：</p>
-<img src="/2018/07/07/uvm-phase/run_phase.png">
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">virtual</span> task <span class="title">run_phase</span> <span class="params">(uvm_phase phase)</span></span>;</span><br><span class="line">    <span class="comment">// Loop the following steps</span></span><br><span class="line">    <span class="comment">// 1. Get next item from the sequencer</span></span><br><span class="line">    <span class="comment">// 2. Assign data from the received item into DUT interface</span></span><br><span class="line">    <span class="comment">// 3. Finish driving transaction</span></span><br><span class="line">  endtask</span><br></pre></td></tr></table></figure>
+<h1 id="Driver-Sequencer-通信"><a href="#Driver-Sequencer-通信" class="headerlink" title="Driver-Sequencer 通信"></a>Driver-Sequencer 通信</h1><p>Driver 可以使用TLM端口和sequencer进行通信， 比如uvm_seq_pull_port。driver 可以向squencer请求transaction， 也可以在完成驱动后，进行回应（reponse）。</p>
+<p>那么如何使用API呢？</p>
+<ol>
+<li>在agent或者是env中将sequencer和driver的TLM 端口相连：</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">virtual</span> function <span class="keyword">void</span> <span class="title">connect_phase</span> <span class="params">()</span></span>;</span><br><span class="line">   m_drv0.seq_item_port.connect (m_seqr0.seq_item_export);</span><br><span class="line">endfunction</span><br></pre></td></tr></table></figure>
+<ol>
+<li>使用握手的方式：get_next_item后面跟item_done();</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">virtual</span> task <span class="title">run_phase</span> <span class="params">(uvm_phase phase)</span></span>;</span><br><span class="line">  my_data req_item;</span><br><span class="line"> </span><br><span class="line">  forever begin</span><br><span class="line">    <span class="comment">// 1. Get next item from the sequencer</span></span><br><span class="line">    seq_item_port.get_next_item (req_item);</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// 2. Drive signals to the interface</span></span><br><span class="line">    @(posedge vif.clk);</span><br><span class="line">    vif.en &lt;= <span class="number">1</span>;</span><br><span class="line">    <span class="comment">// Drive remaining signals, put write data/get read data</span></span><br><span class="line"> </span><br><span class="line">    <span class="comment">// 3. Tell the sequence that driver has finished current item</span></span><br><span class="line">    seq_item_port.item_done();</span><br><span class="line">  end</span><br></pre></td></tr></table></figure>
+<p>或者是</p>
 
       
     </div>
@@ -452,8 +439,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/07/01/xterm-config/" rel="next" title="xterm配置">
-                <i class="fa fa-chevron-left"></i> xterm配置
+              <a href="/2018/07/09/uvm-env/" rel="next" title="uvm environment">
+                <i class="fa fa-chevron-left"></i> uvm environment
               </a>
             
           </div>
@@ -461,10 +448,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/07/08/uvm-test-top/" rel="prev" title="uvm testbench顶层和testcase的编写">
-                uvm testbench顶层和testcase的编写 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -598,7 +581,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#UVM-phase简介"><span class="nav-number">1.</span> <span class="nav-text">UVM phase简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Build-Phase"><span class="nav-number">2.</span> <span class="nav-text">Build Phase</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Driver的编写"><span class="nav-number">1.</span> <span class="nav-text">Driver的编写</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Driver-Sequencer-通信"><span class="nav-number">2.</span> <span class="nav-text">Driver-Sequencer 通信</span></a></li></ol></div>
             
 
           </div>
