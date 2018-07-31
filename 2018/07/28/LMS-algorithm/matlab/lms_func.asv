@@ -1,0 +1,41 @@
+function [yn,W,en]=lms_func(xn,dn,M,mu,itr)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Inpuy:
+%     xn   input signal     ()
+%     dn   所期望的响应序列    (列向量)
+%     M    滤波器的阶数        (标量)
+%     mu   收敛因子(步长)      (标量)     要求大于0,小于xn的相关矩阵最大特征值的倒数    
+%     itr  迭代次数            (标量)     默认为xn的长度,M<itr<length(xn)
+% Output:
+%     W    滤波器的权值矩阵     (矩阵)
+%          大小为M x itr,
+%     en   误差序列(itr x 1)    (列向量)  
+%     yn   实际输出序列             (列向量)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if nargin == 4                  
+    itr = length(xn);
+elseif nargin == 5             
+    if itr>length(xn) || itr<M
+        error('迭代次数过大或过小!');
+    end
+else
+    error('请检查输入参数的个数!');
+end
+
+en = zeros(itr,1);             
+W  = zeros(M,itr);             
+
+% Iterative caculation
+for k = M:itr                 
+    x = xn(k:-1:k-M+1);   
+    y = W(:,k-1).' * x;     
+    en(k) = dn(k) - y ;    
+    
+    W(:,k) = W(:,k-1) + 2*mu*en(k)*x;
+end
+% filter output sequce
+yn = inf * ones(size(xn));
+for k = M:length(xn)
+    x = xn(k:-1:k-M+1);
+    yn(k) = W(:,end).'* x;
+end

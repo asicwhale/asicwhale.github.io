@@ -103,7 +103,7 @@
 <meta property="og:description" content="在实际的验证环境中， uvm_agent应该算是比较大的uvm_componet， 里面可以包含squencer、driver、monitor等单元。如下图所示：  同样uvm agent也可以进行一些参数的配置 agent可以分成两种：  active   包含所有的component， 比如sequencer、driver、monitor； 数据可以通过driver来驱动DUT   passi">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://asicwhale.github.io/2018/07/14/uvm-agent/uvm_agent.png">
-<meta property="og:updated_time" content="2018-07-16T12:49:44.852Z">
+<meta property="og:updated_time" content="2018-07-16T14:30:45.746Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="uvm中的agent">
 <meta name="twitter:description" content="在实际的验证环境中， uvm_agent应该算是比较大的uvm_componet， 里面可以包含squencer、driver、monitor等单元。如下图所示：  同样uvm agent也可以进行一些参数的配置 agent可以分成两种：  active   包含所有的component， 比如sequencer、driver、monitor； 数据可以通过driver来驱动DUT   passi">
@@ -417,7 +417,9 @@
 <li>把agent中的componet连接起来： 比如说sequencer和driver：</li>
 </ol>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">virtual</span> function <span class="keyword">void</span> <span class="title">connect_phase</span> <span class="params">(uvm_phase phase)</span></span>;</span><br><span class="line"> </span><br><span class="line"><span class="comment">// Connect the driver to the sequencer if this agent is Active</span></span><br><span class="line">    <span class="keyword">if</span> (get_is_active())</span><br><span class="line">       m_drv0.seq_item_port.connect (m_seqr0.seq_item_export);</span><br><span class="line"> endfunction</span><br></pre></td></tr></table></figure>
-<h1 id="uvm-agent-的配置"><a href="#uvm-agent-的配置" class="headerlink" title="uvm agent 的配置"></a>uvm agent 的配置</h1>
+<h1 id="uvm-agent-的配置"><a href="#uvm-agent-的配置" class="headerlink" title="uvm agent 的配置"></a>uvm agent 的配置</h1><p>uvm agent有个内部参数是<code>is_active</code>,  可以通过config_db进行配置：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Set the configuration called "is_active" to the agent's path to mark the given agent as passive</span></span><br><span class="line">uvm_config_db #(<span class="keyword">int</span>) :: <span class="built_in">set</span> (<span class="keyword">this</span>, <span class="string">"path_to_agent"</span>, <span class="string">"is_active"</span>, UVM_PASSIVE);</span><br><span class="line"> </span><br><span class="line"><span class="comment">// Set the configuration called "is_active" to the agent's path to mark the given agent as active</span></span><br><span class="line">uvm_config_db #(<span class="keyword">int</span>) :: <span class="built_in">set</span> (<span class="keyword">this</span>, <span class="string">"path_to_agent"</span>, <span class="string">"is_active"</span>, UVM_ACTIVE);</span><br></pre></td></tr></table></figure>
+
       
     </div>
     
@@ -456,6 +458,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/26/uvm-scoreboard/" rel="prev" title="uvm_scoreboard">
+                uvm_scoreboard <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -532,7 +538,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">22</span>
+                <span class="site-state-item-count">26</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
