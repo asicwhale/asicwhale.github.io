@@ -94,20 +94,20 @@
 
 
 
-<meta name="description" content="virtual sequence实际上是一个容器， 其中包含多个sequence， 这些sequence可以给不同env的sequencer发送激励。 比如Soc系统中有PCIe， wishbone， apb总线，一个比较好的方式就是使用virtual sequence进行控制： 如下图所示：  virtual  sequence的使用示例如下代码所示： 123456789101112131415">
+<meta name="description" content="本篇举2个例子说明一下uvm中config_db的使用：如下图所示   case 1  我们把第一个参数设置为null， 并且instance_name设置为uvm_test_top,  这就意味着test_case中所有的component都可以访问要设置的item： 12345678910111213141516171819202122232425class base_env extends">
 <meta name="keywords" content="UVM">
 <meta property="og:type" content="article">
-<meta property="og:title" content="uvm_virtual_sequence">
-<meta property="og:url" content="http://asicwhale.github.io/2018/07/30/uvm-virtual-sequence/index.html">
+<meta property="og:title" content="uvm_config_db应用示例">
+<meta property="og:url" content="http://asicwhale.github.io/2018/08/15/uvm-config-db-example/index.html">
 <meta property="og:site_name" content="ASIC Notes">
-<meta property="og:description" content="virtual sequence实际上是一个容器， 其中包含多个sequence， 这些sequence可以给不同env的sequencer发送激励。 比如Soc系统中有PCIe， wishbone， apb总线，一个比较好的方式就是使用virtual sequence进行控制： 如下图所示：  virtual  sequence的使用示例如下代码所示： 123456789101112131415">
+<meta property="og:description" content="本篇举2个例子说明一下uvm中config_db的使用：如下图所示   case 1  我们把第一个参数设置为null， 并且instance_name设置为uvm_test_top,  这就意味着test_case中所有的component都可以访问要设置的item： 12345678910111213141516171819202122232425class base_env extends">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://asicwhale.github.io/2018/07/30/uvm-virtual-sequence/vseq.png">
-<meta property="og:updated_time" content="2018-07-31T13:57:17.470Z">
+<meta property="og:image" content="http://asicwhale.github.io/2018/08/15/uvm-config-db-example/ex1.png">
+<meta property="og:updated_time" content="2018-08-15T14:08:36.616Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="uvm_virtual_sequence">
-<meta name="twitter:description" content="virtual sequence实际上是一个容器， 其中包含多个sequence， 这些sequence可以给不同env的sequencer发送激励。 比如Soc系统中有PCIe， wishbone， apb总线，一个比较好的方式就是使用virtual sequence进行控制： 如下图所示：  virtual  sequence的使用示例如下代码所示： 123456789101112131415">
-<meta name="twitter:image" content="http://asicwhale.github.io/2018/07/30/uvm-virtual-sequence/vseq.png">
+<meta name="twitter:title" content="uvm_config_db应用示例">
+<meta name="twitter:description" content="本篇举2个例子说明一下uvm中config_db的使用：如下图所示   case 1  我们把第一个参数设置为null， 并且instance_name设置为uvm_test_top,  这就意味着test_case中所有的component都可以访问要设置的item： 12345678910111213141516171819202122232425class base_env extends">
+<meta name="twitter:image" content="http://asicwhale.github.io/2018/08/15/uvm-config-db-example/ex1.png">
 
 
 
@@ -136,13 +136,13 @@
 
 
 
-  <link rel="canonical" href="http://asicwhale.github.io/2018/07/30/uvm-virtual-sequence/"/>
+  <link rel="canonical" href="http://asicwhale.github.io/2018/08/15/uvm-config-db-example/"/>
 
 
 
 
 
-  <title>uvm_virtual_sequence | ASIC Notes</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title>uvm_config_db应用示例 | ASIC Notes</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -283,7 +283,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://asicwhale.github.io/2018/07/30/uvm-virtual-sequence/">
+    <link itemprop="mainEntityOfPage" href="http://asicwhale.github.io/2018/08/15/uvm-config-db-example/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="asicwhale">
@@ -300,7 +300,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">uvm_virtual_sequence</h1>
+          <h1 class="post-title" itemprop="name headline">uvm_config_db应用示例</h1>
         
 
         <div class="post-meta">
@@ -312,8 +312,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-30T20:36:33+08:00">
-                2018-07-30
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-15T21:00:03+08:00">
+                2018-08-15
               </time>
             
 
@@ -383,13 +383,22 @@
       
 
       
-        <p>virtual sequence实际上是一个容器， 其中包含多个sequence， 这些sequence可以给不同env的sequencer发送激励。 比如Soc系统中有PCIe， wishbone， apb总线，一个比较好的方式就是使用virtual sequence进行控制：</p>
-<p>如下图所示：</p>
-<img src="/2018/07/30/uvm-virtual-sequence/vseq.png">
-<p>virtual  sequence的使用示例如下代码所示：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">my_virtual_seq</span> <span class="title">extends</span> <span class="title">uvm_sequence</span>;</span></span><br><span class="line">   `uvm_object_utils (my_virtual_seq)</span><br><span class="line">   `uvm_declare_p_sequencer (my_virtual_sequencer)</span><br><span class="line"></span><br><span class="line">   <span class="function">function <span class="title">new</span> <span class="params">(<span class="built_in">string</span> name = <span class="string">"my_virtual_seq"</span>)</span></span>;</span><br><span class="line">     super.<span class="keyword">new</span> (name);</span><br><span class="line">   endfunction</span><br><span class="line"></span><br><span class="line">   apb_rd_wr_seq   m_apb_rd_wr_seq;</span><br><span class="line">   wb_reset_seq   m_wb_reset_seq;</span><br><span class="line">   pcie_gen_seq   m_pcie_gen_seq;</span><br><span class="line"></span><br><span class="line">   <span class="function">task <span class="title">pre_body</span><span class="params">()</span></span>;</span><br><span class="line">     m_apb_rd_wr_seq = apb_rd_wr_seq::type_id::create (<span class="string">"m_apb_rd_wr_seq"</span>);</span><br><span class="line">     m_wb_reset_seq  = wb_reset_seq::type_id::create (<span class="string">"m_wb_reset_seq"</span>);</span><br><span class="line">     m_pcie_gen_seq  = pcie_gen_seq::type_id::create (<span class="string">"m_pcie_gen_seq"</span>);</span><br><span class="line">   endtask</span><br><span class="line"></span><br><span class="line">   <span class="function">task <span class="title">body</span><span class="params">()</span></span>;</span><br><span class="line">     ...</span><br><span class="line">     m_apb_rd_wr_seq.start (p_sequencer.m_apb_seqr);</span><br><span class="line">     fork</span><br><span class="line">       m_wb_reset_seq.start (p_sequencer.m_wb_seqr);</span><br><span class="line">       m_pcie_gen_seq.start (p_sequencer.m_pcie_seqr);</span><br><span class="line">     join </span><br><span class="line">     ...</span><br><span class="line">   endtask</span><br><span class="line"> endclass</span><br></pre></td></tr></table></figure>
-<p>档virtual  sequence定义后， 可以在test case中这样去定义：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">my_test</span> <span class="title">extends</span> <span class="title">uvm_test</span>;</span></span><br><span class="line">  `uvm_component_utils (my_test)</span><br><span class="line"> </span><br><span class="line">  my_env   m_env;</span><br><span class="line"> </span><br><span class="line">  ...</span><br><span class="line"> </span><br><span class="line">  <span class="function">task <span class="title">run_phase</span> <span class="params">(uvm_phase phase)</span></span>;</span><br><span class="line">    my_virtual_seq m_vseq = my_virtual_seq::type_id::create (<span class="string">"m_vseq"</span>);</span><br><span class="line">    phase.raise_objection (<span class="keyword">this</span>);</span><br><span class="line">    m_vseq.start (m_env.m_virtual_seqr);</span><br><span class="line">    phase.drop_objection (<span class="keyword">this</span>);</span><br><span class="line">  endtask</span><br><span class="line">endclass</span><br></pre></td></tr></table></figure>
+        <p>本篇举2个例子说明一下uvm中config_db的使用：如下图所示</p>
+<img src="/2018/08/15/uvm-config-db-example/ex1.png">
+<ol>
+<li>case 1</li>
+</ol>
+<p>我们把第一个参数设置为<code>null</code>， 并且<code>instance_name</code>设置为uvm_test_top,  这就意味着test_case中所有的component都可以访问要设置的item：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">base_env</span> <span class="title">extends</span> <span class="title">uvm_env</span>;</span></span><br><span class="line">  ...</span><br><span class="line">  <span class="built_in">string</span> name;</span><br><span class="line"> </span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> function <span class="keyword">void</span> <span class="title">build_phase</span> <span class="params">(uvm_phase phase)</span></span>;</span><br><span class="line">    super.build_name ();</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// Retrieve the string that was set in config_db from the test class</span></span><br><span class="line">    <span class="keyword">if</span> (uvm_config_db #(<span class="built_in">string</span>) :: get (null, <span class="string">"uvm_test_top"</span>, <span class="string">"Friend"</span>, name))</span><br><span class="line">      `uvm_info (<span class="string">"ENV"</span>, $sformatf (<span class="string">"Found %s"</span>, name), UVM_MEDIUM)</span><br><span class="line"> </span><br><span class="line">  endfunction</span><br><span class="line">endclass</span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">base_test</span> <span class="title">extends</span> <span class="title">uvm_test</span>;</span></span><br><span class="line">  ...</span><br><span class="line">  base_env   m_env;</span><br><span class="line"> </span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> function <span class="keyword">void</span> <span class="title">build_phase</span> <span class="params">(uvm_phase phase)</span></span>;</span><br><span class="line">    ...</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// Set this string into config_db</span></span><br><span class="line">    uvm_config_db #(<span class="built_in">string</span>) :: <span class="built_in">set</span> (null, <span class="string">"uvm_test_top"</span>, <span class="string">"Friend"</span>, <span class="string">"Joey"</span>);</span><br><span class="line">  endfunction</span><br><span class="line">endclass</span><br></pre></td></tr></table></figure>
+<p>我们在仿真时可以在命令行中加入命令<code>+VUM_CONFIG_DB_TRACE</code>来通过打印信息检查环境是否OK， 上面的例子仿真的log如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">ncsim&gt; run</span><br><span class="line">UVM_INFO /playground_lib/uvm-1.2/src/base/uvm_root.svh(392) @ 0: reporter [UVM/RELNOTES] </span><br><span class="line">----------------------------------------------------------------</span><br><span class="line">UVM-1.2</span><br><span class="line">(C) 2007-2014 Mentor Graphics Corporation</span><br><span class="line">(C) 2007-2014 Cadence Design Systems, Inc.</span><br><span class="line">(C) 2006-2014 Synopsys, Inc.</span><br><span class="line">(C) 2011-2013 Cypress Semiconductor Corp.</span><br><span class="line">(C) 2013-2014 NVIDIA Corporation</span><br><span class="line">----------------------------------------------------------------</span><br><span class="line">UVM_INFO @ 0: reporter [RNTST] Running test base_test...</span><br><span class="line">UVM_INFO /playground_lib/uvm-1.2/src/base/uvm_resource_db.svh(121) @ 0: reporter [CFGDB/GET] Configuration &apos;uvm_test_top.base_env.recording_detail&apos; (type logic signed[4095:0]) read by uvm_test_top.base_env = null (failed lookup)</span><br><span class="line">UVM_INFO /playground_lib/uvm-1.2/src/base/uvm_resource_db.svh(121) @ 0: reporter [CFGDB/GET] Configuration &apos;uvm_test_top.base_env.recording_detail&apos; (type int) read by uvm_test_top.base_env = null (failed lookup)</span><br><span class="line">UVM_INFO /playground_lib/uvm-1.2/src/base/uvm_resource_db.svh(121) @ 0: reporter [CFGDB/SET] Configuration &apos;uvm_test_top.Friend&apos; (type string) set by  = (string) &quot;Joey&quot;</span><br><span class="line">UVM_INFO /playground_lib/uvm-1.2/src/base/uvm_resource_db.svh(121) @ 0: reporter [CFGDB/GET] Configuration &apos;uvm_test_top.base_env.m_agent0.recording_detail&apos; (type logic signed[4095:0]) read by uvm_test_top.base_env.m_agent0 = null (failed lookup)</span><br><span class="line">UVM_INFO /playground_lib/uvm-1.2/src/base/uvm_resource_db.svh(121) @ 0: reporter [CFGDB/GET] Configuration &apos;uvm_test_top.base_env.m_agent0.recording_detail&apos; (type int) read by uvm_test_top.base_env.m_agent0 = null (failed lookup)</span><br><span class="line">UVM_INFO /playground_lib/uvm-1.2/src/base/uvm_resource_db.svh(121) @ 0: reporter [CFGDB/GET] Configuration &apos;uvm_test_top.base_env.m_agent1.recording_detail&apos; (type logic signed[4095:0]) read by uvm_test_top.base_env.m_agent1 = null (failed lookup)</span><br><span class="line">UVM_INFO /playground_lib/uvm-1.2/src/base/uvm_resource_db.svh(121) @ 0: reporter [CFGDB/GET] Configuration &apos;uvm_test_top.base_env.m_agent1.recording_detail&apos; (type int) read by uvm_test_top.base_env.m_agent1 = null (failed lookup)</span><br><span class="line">UVM_INFO /playground_lib/uvm-1.2/src/base/uvm_resource_db.svh(121) @ 0: reporter [CFGDB/GET] Configuration &apos;uvm_test_top.Friend&apos; (type string) read by  = (string) &quot;Joey&quot;</span><br><span class="line">UVM_INFO testbench.sv(36) @ 0: uvm_test_top.base_env [ENV] Found Joey</span><br><span class="line">UVM_INFO /playground_lib/uvm-1.2/src/base/uvm_report_server.svh(847) @ 0: reporter [UVM/REPORT/SERVER] </span><br><span class="line">--- UVM Report Summary ---</span><br><span class="line"></span><br><span class="line">** Report counts by severity</span><br></pre></td></tr></table></figure>
+<ol>
+<li>case 2</li>
+</ol>
+<p>设置第一个参数为<code>this</code>， instance_name 为空， 如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">uvm_config_db #(<span class="built_in">string</span>) :: <span class="built_in">set</span> (<span class="keyword">this</span>, <span class="string">""</span>, <span class="string">"Friend"</span>, <span class="string">"Joey"</span>);</span><br><span class="line"> </span><br><span class="line"><span class="comment">// Same get method</span></span><br><span class="line"><span class="keyword">if</span> (uvm_config_db #(<span class="built_in">string</span>) :: get (null, <span class="string">"uvm_test_top"</span>, <span class="string">"Friend"</span>, name))</span><br><span class="line">    `uvm_info (<span class="string">"ENV"</span>, $sformatf (<span class="string">"Found %s"</span>, name), UVM_MEDIUM)</span><br></pre></td></tr></table></figure>
+<p>log如下， 仍然可以正确获取参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">UVM_INFO /playground_lib/uvm-1.2/src/base/uvm_resource_db.svh(121) @ 0: reporter [CFGDB/SET] Configuration &apos;uvm_test_top.Friend&apos; (type string) set by uvm_test_top = (string) &quot;Joey&quot;</span><br><span class="line">...</span><br><span class="line">UVM_INFO /playground_lib/uvm-1.2/src/base/uvm_resource_db.svh(121) @ 0: reporter [CFGDB/GET] Configuration &apos;uvm_test_top.Friend&apos; (type string) read by  = (string) &quot;Joey&quot;</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -420,8 +429,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/07/28/LMS-algorithm/" rel="next" title="lms算法简介">
-                <i class="fa fa-chevron-left"></i> lms算法简介
+              <a href="/2018/08/14/uvm-config-db/" rel="next" title="uvm 中的config_db介绍">
+                <i class="fa fa-chevron-left"></i> uvm 中的config_db介绍
               </a>
             
           </div>
@@ -429,10 +438,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/07/31/sequencer-driver-communication/" rel="prev" title="uvm sequencer和driver通信">
-                uvm sequencer和driver通信 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
