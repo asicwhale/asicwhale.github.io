@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="ECO," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="本篇主要介绍一下conformal ECO的flow。ECO 可以分成下面两种：  pre_mask ECO指的是在chip mask 没有制作完成时ECO， 工具会假设标准单元库中的所有的cell 有可以用于实现ECO。  post-mask ECO 指的是chip mask 已经制作完成， 工具会指定spare cell 来完成ECO   spare cell 顾名思义就是备用的cell， 用">
+<meta name="keywords" content="ECO">
+<meta property="og:type" content="article">
+<meta property="og:title" content="conformal ECO flow 介绍">
+<meta property="og:url" content="http://asicwhale.github.io/2018/05/14/201805-2018-05-14-conformal-ECO-flow-intro/index.html">
+<meta property="og:site_name" content="ASIC Notes">
+<meta property="og:description" content="本篇主要介绍一下conformal ECO的flow。ECO 可以分成下面两种：  pre_mask ECO指的是在chip mask 没有制作完成时ECO， 工具会假设标准单元库中的所有的cell 有可以用于实现ECO。  post-mask ECO 指的是chip mask 已经制作完成， 工具会指定spare cell 来完成ECO   spare cell 顾名思义就是备用的cell， 用">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://asicwhale.github.io/2018/05/14/201805-2018-05-14-conformal-ECO-flow-intro/data_input_1.jpg">
+<meta property="og:image" content="http://asicwhale.github.io/2018/05/14/201805-2018-05-14-conformal-ECO-flow-intro/data_input_2.jpg">
+<meta property="og:image" content="http://asicwhale.github.io/2018/05/14/201805-2018-05-14-conformal-ECO-flow-intro/data_input_3.jpg">
+<meta property="og:image" content="http://asicwhale.github.io/2018/05/14/201805-2018-05-14-conformal-ECO-flow-intro/premask_eco.jpg">
+<meta property="og:updated_time" content="2018-05-15T06:02:26.114Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="conformal ECO flow 介绍">
+<meta name="twitter:description" content="本篇主要介绍一下conformal ECO的flow。ECO 可以分成下面两种：  pre_mask ECO指的是在chip mask 没有制作完成时ECO， 工具会假设标准单元库中的所有的cell 有可以用于实现ECO。  post-mask ECO 指的是chip mask 已经制作完成， 工具会指定spare cell 来完成ECO   spare cell 顾名思义就是备用的cell， 用">
+<meta name="twitter:image" content="http://asicwhale.github.io/2018/05/14/201805-2018-05-14-conformal-ECO-flow-intro/data_input_1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://asicwhale.github.io/2018/05/14/201805-2018-05-14-conformal-ECO-flow-intro/"/>
+
+
+
+
+
+  <title>conformal ECO flow 介绍 | ASIC Notes</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="site-title">ASIC Notes</span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">live a life</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://asicwhale.github.io/2018/05/14/201805-2018-05-14-conformal-ECO-flow-intro/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="asicwhale">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ASIC Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">conformal ECO flow 介绍</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-14T10:11:39+08:00">
+                2018-05-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/EDA/" itemprop="url" rel="index">
+                    <span itemprop="name">EDA</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/EDA/Cadence-Conformal/" itemprop="url" rel="index">
+                    <span itemprop="name">Cadence Conformal</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本篇主要介绍一下conformal ECO的flow。<br>ECO 可以分成下面两种：</p>
+<ul>
+<li><p>pre_mask ECO<br>指的是在chip mask 没有制作完成时ECO， 工具会假设标准单元库中的所有的cell 有可以用于实现ECO。</p>
+</li>
+<li><p>post-mask ECO</p>
+<p>指的是chip mask 已经制作完成， 工具会指定spare cell 来完成ECO</p>
+</li>
+</ul>
+<p>spare cell 顾名思义就是备用的cell， 用于function ECO 和 metal change用的， 通常在PR阶段插入， 并且有指定的物理位置和timing 要求。</p>
+<h1 id="输入文件的要求"><a href="#输入文件的要求" class="headerlink" title="输入文件的要求"></a>输入文件的要求</h1><ol>
+<li>必需的文件包括， 网表， def， lef 文件等:</li>
+</ol>
+<img src="/2018/05/14/201805-2018-05-14-conformal-ECO-flow-intro/data_input_1.jpg">
+<img src="/2018/05/14/201805-2018-05-14-conformal-ECO-flow-intro/data_input_2.jpg">
+<ol>
+<li>这些文件是recommend。</li>
+</ol>
+<img src="/2018/05/14/201805-2018-05-14-conformal-ECO-flow-intro/data_input_3.jpg">
+<h1 id="Flattened-ECO-flow"><a href="#Flattened-ECO-flow" class="headerlink" title="Flattened  ECO flow"></a>Flattened  ECO flow</h1><p>Flattned ECO是Conformal 比较推荐的Flow。</p>
+<ul>
+<li><p>设置ECO mode</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">set_flatten_mode -eco</span><br><span class="line">set_flatten_mode  -enable_analyze_hier_compare</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用analyze hier 提供额外的选项， 比如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">analyze hier -do_file  eco_log.do \</span><br><span class="line">-ECOaware \</span><br><span class="line">-CONSTranints -NOEXact_pin_match \</span><br><span class="line">-FUNCTION_Pin_mapping \</span><br><span class="line">-INPUT_OUTPUT_Pin_equivalence \</span><br><span class="line">-verbose -usage -replace</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>开始比较flattened  design</p>
+<figure class="highlight tcl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">add compare points -all</span><br><span class="line">compare</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用下面的命令将non-equivalent point 分解到sub module</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">compare eco hierarchy</span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用下面的命令创建必要的patch</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">analyze eco -hierarchical \</span><br><span class="line">-ecopin_dofile ecopin.do</span><br></pre></td></tr></table></figure>
+<ul>
+<li>apply patch and optimize patch</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">apply patch -auto</span><br><span class="line">optimize patch  \</span><br><span class="line">	-library &lt;design.lib&gt;</span><br><span class="line">	-sdc &lt;xxxx.sdc&gt;</span><br><span class="line">	-netnaming xxx_eco_net_%d \</span><br><span class="line">	-instancenaming xxx_eco_gate_%d \</span><br><span class="line">	-sequitialnaming xxxx \</span><br><span class="line">	-POSTLIBsript  xxx.tcl \</span><br><span class="line">    -POSTSYNscript xxx.tcl \</span><br></pre></td></tr></table></figure>
+<h1 id="premask-ECO-flow"><a href="#premask-ECO-flow" class="headerlink" title="premask  ECO flow"></a>premask  ECO flow</h1><p>premask ECO flow 一般包含下面几个步骤：</p>
+<ol>
+<li>比较旧的RTL 和旧的netlist， 这一步的比较结果应该是等价的。 可以添加一些约束，来关闭scan。</li>
+</ol>
+<p>比如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">add pin constraints 0 scan_enable -golden</span><br><span class="line">add pin constraints 0 scan_enable -revi</span><br></pre></td></tr></table></figure>
+<ol>
+<li>综合新版本的RTL。 需要注意的是： 尽量使用相同版本的DC， 综合tcl脚本</li>
+<li>比较新版的RTL和新版的netlist， 这一步应该是等价的。</li>
+<li>比较旧版的RTL和新版本的RTL， 这一步比较应该是非等价的。应该注意下面几点：<ul>
+<li>X conversion 的设置： 新版RTL应该是‘Don’t care’； 旧版的RTL是’E’ ,  在使用read design 命令时， 这样的设置已经是默认的了。</li>
+<li>不要使用dynamic 的比较方式；</li>
+<li>用vim -diff 查看一下RTL有哪些改动， LEC 的比较结果应该和RTL的改动是吻合的。</li>
+</ul>
+</li>
+<li>比较旧版本的netlist 和新版本的netlist。 no-equivalent module应该和第4步中是吻合的。</li>
+<li>使用旧版的netlist 和新版本的netlist 创建ECO path file。</li>
+<li>apply patch， 并且产生ECO 网表。</li>
+<li>使用  [optimize patch] 命令：<ul>
+<li>读入 SDC、 capacitance table、 和LEF文件， 见上面的命令；</li>
+<li>映射和优化ECO patch file</li>
+</ul>
+</li>
+<li>检查ECO netlist</li>
+</ol>
+<p>premask  ECO flow 如下图所示：</p>
+<img src="/2018/05/14/201805-2018-05-14-conformal-ECO-flow-intro/premask_eco.jpg">
+<h1 id="postmask-ECO-flow"><a href="#postmask-ECO-flow" class="headerlink" title="postmask ECO flow"></a>postmask ECO flow</h1><p>postmask  的flow 和premask类似， 只不过是在apply patch 之前要指定spare cell。 </p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ECO/" rel="tag"># ECO</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/13/201805-2018-05-13-ASIC-basic-circuit-0/" rel="next" title="基础电路分析 （一）">
+                <i class="fa fa-chevron-left"></i> 基础电路分析 （一）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/16/201805-2018-05-16-STA-basic-1/" rel="prev" title="STA分析基础（一）">
+                STA分析基础（一） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="asicwhale" />
+          <p class="site-author-name" itemprop="name">asicwhale</p>
+           
+              <p class="site-description motion-element" itemprop="description">nonw</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#输入文件的要求"><span class="nav-number">1.</span> <span class="nav-text">输入文件的要求</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Flattened-ECO-flow"><span class="nav-number">2.</span> <span class="nav-text">Flattened  ECO flow</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#premask-ECO-flow"><span class="nav-number">3.</span> <span class="nav-text">premask  ECO flow</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#postmask-ECO-flow"><span class="nav-number">4.</span> <span class="nav-text">postmask ECO flow</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">asicwhale</span>
+</div>
+
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

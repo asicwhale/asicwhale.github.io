@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="circuit," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="决定写一些基础电路方面的笔记， 免得自己把一些很基础的概念、电路忘得一干二净。 这篇文章就介绍三个， 并且这三个电路经常出现在笔试或者面试。 统计电路我们知道matlab有一个函数hist， 可以画出随机数的分布， 其实这个函数用电路也可以实现。看下面一个例子： 假设每个周期输入一个16bit的随机数， enable 和capture_data指定一个数据， 假设是W， 电路要统计W之前出现的次数">
+<meta name="keywords" content="circuit">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基础电路分析 （一）">
+<meta property="og:url" content="http://asicwhale.github.io/2018/05/13/201805-2018-05-13-ASIC-basic-circuit-0/index.html">
+<meta property="og:site_name" content="ASIC Notes">
+<meta property="og:description" content="决定写一些基础电路方面的笔记， 免得自己把一些很基础的概念、电路忘得一干二净。 这篇文章就介绍三个， 并且这三个电路经常出现在笔试或者面试。 统计电路我们知道matlab有一个函数hist， 可以画出随机数的分布， 其实这个函数用电路也可以实现。看下面一个例子： 假设每个周期输入一个16bit的随机数， enable 和capture_data指定一个数据， 假设是W， 电路要统计W之前出现的次数">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://asicwhale.github.io/2018/05/13/201805-2018-05-13-ASIC-basic-circuit-0/ex1_timing.svg">
+<meta property="og:image" content="http://asicwhale.github.io/2018/05/13/201805-2018-05-13-ASIC-basic-circuit-0/log2.svg">
+<meta property="og:image" content="http://asicwhale.github.io/2018/05/13/201805-2018-05-13-ASIC-basic-circuit-0/log_res.svg">
+<meta property="og:updated_time" content="2018-05-13T13:01:02.524Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基础电路分析 （一）">
+<meta name="twitter:description" content="决定写一些基础电路方面的笔记， 免得自己把一些很基础的概念、电路忘得一干二净。 这篇文章就介绍三个， 并且这三个电路经常出现在笔试或者面试。 统计电路我们知道matlab有一个函数hist， 可以画出随机数的分布， 其实这个函数用电路也可以实现。看下面一个例子： 假设每个周期输入一个16bit的随机数， enable 和capture_data指定一个数据， 假设是W， 电路要统计W之前出现的次数">
+<meta name="twitter:image" content="http://asicwhale.github.io/2018/05/13/201805-2018-05-13-ASIC-basic-circuit-0/ex1_timing.svg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://asicwhale.github.io/2018/05/13/201805-2018-05-13-ASIC-basic-circuit-0/"/>
+
+
+
+
+
+  <title>基础电路分析 （一） | ASIC Notes</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="site-title">ASIC Notes</span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">live a life</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://asicwhale.github.io/2018/05/13/201805-2018-05-13-ASIC-basic-circuit-0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="asicwhale">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ASIC Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">基础电路分析 （一）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-13T13:16:43+08:00">
+                2018-05-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ASIC-设计/" itemprop="url" rel="index">
+                    <span itemprop="name">ASIC 设计</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ASIC-设计/基础电路/" itemprop="url" rel="index">
+                    <span itemprop="name">基础电路</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>决定写一些基础电路方面的笔记， 免得自己把一些很基础的概念、电路忘得一干二净。 这篇文章就介绍三个， 并且这三个电路经常出现在笔试或者面试。</p>
+<h1 id="统计电路"><a href="#统计电路" class="headerlink" title="统计电路"></a>统计电路</h1><p>我们知道matlab有一个函数hist， 可以画出随机数的分布， 其实这个函数用电路也可以实现。看下面一个例子：</p>
+<p>假设每个周期输入一个16bit的随机数， enable 和capture_data指定一个数据， 假设是W， 电路要统计W之前出现的次数， 并且要求下一周期输出，如何实现？</p>
+<p>​                        <img src="/2018/05/13/201805-2018-05-13-ASIC-basic-circuit-0/ex1_timing.svg"></p>
+<p>如果不考虑overflow， 那么便可以用一个2p-RAM来实现。 把随机数当做地址。</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">ram_dp_ar_sw</span><br><span class="line">#(</span><br><span class="line">    	<span class="variable">.DATA_WIDTH</span>     (<span class="number">16</span>),</span><br><span class="line">    	<span class="variable">.ADDR_WIDTH</span>     (<span class="number">16</span>)</span><br><span class="line">) dpRAM_u</span><br><span class="line">(</span><br><span class="line">        <span class="variable">.wr_clk</span>         (clk),</span><br><span class="line">        <span class="variable">.wr_en</span>          (rnd_valid),</span><br><span class="line">        <span class="variable">.wr_addr</span>        (rnd_in),</span><br><span class="line">        <span class="variable">.data_in</span>        (adder_out),</span><br><span class="line"></span><br><span class="line">        <span class="variable">.rst_n</span>          (rst_n),</span><br><span class="line">        <span class="variable">.rd_en</span>          (<span class="number">1'b1</span>),</span><br><span class="line">        <span class="variable">.rd_addr</span>        (rd_addr),</span><br><span class="line">        <span class="variable">.data_out</span>       (ram_out)</span><br><span class="line">        </span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">assign</span> adder_out = ram_out + &#123;<span class="number">15'd0</span>,<span class="number">1'b1</span>&#125;;</span><br><span class="line"><span class="keyword">assign</span> rd_addr = (capture_en == <span class="number">1'b1</span>)? capture_data : rnd_in;</span><br></pre></td></tr></table></figure>
+<h1 id="log2-X-电路设计"><a href="#log2-X-电路设计" class="headerlink" title="log2(X) 电路设计"></a>log2(X) 电路设计</h1><p>如何实现log2（x）？ 假设X是16bit定点数（有整数部分和小数部分）， 并且输入的值大于1。</p>
+<p>其实如果输入数据是整数， 那么优先编码器可以解决该问题，但是输入是定点数，就不可以那么处理了。设计实现的思路有两点：</p>
+<ul>
+<li>LUT 查表</li>
+<li>归一化</li>
+</ul>
+<p>计算方法如下面的公式：</p>
+<script type="math/tex; mode=display">log_2(x) =  log_2(2^n\cdot2^{-n}\cdot x)=n+log_2(2^{-n}\cdot x)</script><p>如果我们选择$n$ 使得$(2^{-n}\cdot x) \in [1,2)$,  那么n就是log结果的整数部分， 可以通过优先编码器得到。 然后经过barrel shifter得到$2^{-n}\cdot x$.  </p>
+<p>最后用LUT计算低bit， 也就是log的小数部分。 因为我们把数值范围进行了归一化， 这样LUT就会比较小了。</p>
+<p>电路的结构如图所示：</p>
+<p>​                        <img src="/2018/05/13/201805-2018-05-13-ASIC-basic-circuit-0/log2.svg"></p>
+<p>其中 LUT部分的rtl code 可以写成：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="keyword">real</span> rlog2;</span><br><span class="line">  <span class="keyword">input</span> <span class="keyword">real</span> x;</span><br><span class="line">  <span class="keyword">begin</span></span><br><span class="line">    rlog2 = <span class="built_in">$ln</span>(x)/<span class="built_in">$ln</span>(<span class="number">2</span>);</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">endfunction</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">integer</span> i;</span><br><span class="line"><span class="keyword">initial</span></span><br><span class="line"><span class="keyword">begin</span> : init_lut</span><br><span class="line">  lut[<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">for</span> (i=<span class="number">1</span>; i &lt; (<span class="number">1</span>&lt;&lt;ADDR_WIDTH); i=i+<span class="number">1</span>)</span><br><span class="line">    lut[i] = <span class="built_in">$rtoi</span>(rlog2(<span class="number">1</span><span class="variable">.0</span> + <span class="built_in">$itor</span>(i)/<span class="built_in">$itor</span>(<span class="number">1</span>&lt;&lt;ADDR_WIDTH)) * <span class="built_in">$itor</span>(<span class="number">1</span>&lt;&lt;DATA_WIDTH)+<span class="number">0</span><span class="variable">.5</span>);</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">assign</span> data_out = lut[addr];</span><br></pre></td></tr></table></figure>
+<p>而优先编码器的rtl code 可以写成：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">generate</span> </span><br><span class="line">    <span class="keyword">if</span> (WIDTH == <span class="number">2</span>) <span class="keyword">begin</span></span><br><span class="line">        <span class="keyword">assign</span> valid = |enc_in;</span><br><span class="line">        <span class="keyword">assign</span> enc_out = enc_in[<span class="number">1</span>];</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (WIDTH &amp; (WIDTH-<span class="number">1</span>)) <span class="keyword">begin</span></span><br><span class="line">        prior_enc <span class="variable">#(1 &lt;&lt; $clog2(WIDTH))</span> </span><br><span class="line">        prior_enc_u(&#123;(<span class="number">1</span> &lt;&lt; <span class="built_in">$clog2</span>(WIDTH))&#123;<span class="number">1'b0</span>&#125;&#125;|enc_in,enc_out,valid);        </span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">begin</span></span><br><span class="line">        <span class="keyword">wire</span> [<span class="built_in">$clog2</span>(WIDTH)-<span class="number">2</span>:<span class="number">0</span>]  encode_low;</span><br><span class="line">        <span class="keyword">wire</span> [<span class="built_in">$clog2</span>(WIDTH)-<span class="number">2</span>:<span class="number">0</span>]  encode_high;</span><br><span class="line">        <span class="keyword">wire</span> valid_low,valid_high;</span><br><span class="line">        prior_enc <span class="variable">#(WIDTH &gt;&gt; 1) low_u (enc_in[(WIDTH&gt;&gt;1)-1:0],encode_low,valid_low)</span>;</span><br><span class="line">        prior_enc <span class="variable">#(WIDTH &gt;&gt; 1) high_u (enc_in[WIDTH-1:(WIDTH&gt;&gt;1)],encode_high,valid_high)</span>;</span><br><span class="line">        <span class="keyword">assign</span> valid = valid_low | valid_high;</span><br><span class="line">        <span class="keyword">assign</span> enc_out = (valid_high)? &#123;<span class="number">1'b1</span>,encode_high&#125; : &#123;<span class="number">1'b0</span>,encode_low&#125;;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">endgenerate</span></span><br></pre></td></tr></table></figure>
+<p>测试结果如下所示：</p>
+<p>​                        <img src="/2018/05/13/201805-2018-05-13-ASIC-basic-circuit-0/log_res.svg"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/circuit/" rel="tag"># circuit</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/12/201805-2018-05-12-signal-represent-as-vector/" rel="next" title="信号的向量表示">
+                <i class="fa fa-chevron-left"></i> 信号的向量表示
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/14/201805-2018-05-14-conformal-ECO-flow-intro/" rel="prev" title="conformal ECO flow 介绍">
+                conformal ECO flow 介绍 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="asicwhale" />
+          <p class="site-author-name" itemprop="name">asicwhale</p>
+           
+              <p class="site-description motion-element" itemprop="description">nonw</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#统计电路"><span class="nav-number">1.</span> <span class="nav-text">统计电路</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#log2-X-电路设计"><span class="nav-number">2.</span> <span class="nav-text">log2(X) 电路设计</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">asicwhale</span>
+</div>
+
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>
