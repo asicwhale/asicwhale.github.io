@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="mmwave," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="mmWave雷达传输波长在毫米范围内的信号。 那么mmWave信号所需的天线很小。 短波长另外的一个优点是高精度。 mmWave系统工作在76-81 GHz（带有相应的波长约4毫米），将具有检测运动的能力小到几分之一毫米。 本系列就主要来学习一下关于毫米波雷达的一些基础知识和信号处理算法。 基础概念先来看一类特殊的雷达信号FMCW（frequency  modulated continuous w">
+<meta name="keywords" content="mmwave">
+<meta property="og:type" content="article">
+<meta property="og:title" content="毫米波雷达学习（一）">
+<meta property="og:url" content="http://asicwhale.github.io/2018/11/17/201811-2018-11-17-mmWave-radar-basic/index.html">
+<meta property="og:site_name" content="ASIC Notes">
+<meta property="og:description" content="mmWave雷达传输波长在毫米范围内的信号。 那么mmWave信号所需的天线很小。 短波长另外的一个优点是高精度。 mmWave系统工作在76-81 GHz（带有相应的波长约4毫米），将具有检测运动的能力小到几分之一毫米。 本系列就主要来学习一下关于毫米波雷达的一些基础知识和信号处理算法。 基础概念先来看一类特殊的雷达信号FMCW（frequency  modulated continuous w">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://asicwhale.github.io/2018/11/17/201811-2018-11-17-mmWave-radar-basic/chirp_signal.jpg">
+<meta property="og:image" content="http://asicwhale.github.io/2018/11/17/201811-2018-11-17-mmWave-radar-basic/chirp_rate.jpg">
+<meta property="og:image" content="http://asicwhale.github.io/2018/11/17/201811-2018-11-17-mmWave-radar-basic/radar_system.jpg">
+<meta property="og:image" content="http://asicwhale.github.io/2018/11/17/201811-2018-11-17-mmWave-radar-basic/mixer.jpg">
+<meta property="og:image" content="http://asicwhale.github.io/2018/11/17/201811-2018-11-17-mmWave-radar-basic/speed.jpg">
+<meta property="og:image" content="http://asicwhale.github.io/2018/11/17/201811-2018-11-17-mmWave-radar-basic/chirp_frame.jpg">
+<meta property="og:image" content="http://asicwhale.github.io/2018/11/17/201811-2018-11-17-mmWave-radar-basic/phasor.jpg">
+<meta property="og:updated_time" content="2018-11-18T11:45:25.856Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="毫米波雷达学习（一）">
+<meta name="twitter:description" content="mmWave雷达传输波长在毫米范围内的信号。 那么mmWave信号所需的天线很小。 短波长另外的一个优点是高精度。 mmWave系统工作在76-81 GHz（带有相应的波长约4毫米），将具有检测运动的能力小到几分之一毫米。 本系列就主要来学习一下关于毫米波雷达的一些基础知识和信号处理算法。 基础概念先来看一类特殊的雷达信号FMCW（frequency  modulated continuous w">
+<meta name="twitter:image" content="http://asicwhale.github.io/2018/11/17/201811-2018-11-17-mmWave-radar-basic/chirp_signal.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://asicwhale.github.io/2018/11/17/201811-2018-11-17-mmWave-radar-basic/"/>
+
+
+
+
+
+  <title>毫米波雷达学习（一） | ASIC Notes</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="site-title">ASIC Notes</span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">live a life</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://asicwhale.github.io/2018/11/17/201811-2018-11-17-mmWave-radar-basic/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="asicwhale">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ASIC Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">毫米波雷达学习（一）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-17T17:43:14+08:00">
+                2018-11-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/通信/" itemprop="url" rel="index">
+                    <span itemprop="name">通信</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>mmWave雷达传输波长在毫米范围内的信号。 那么mmWave信号所需的天线很小。 短波长另外的一个优点是高精度。 mmWave系统工作在76-81 GHz（带有相应的波长约4毫米），将具有检测运动的能力小到几分之一毫米。</p>
+<p>本系列就主要来学习一下关于毫米波雷达的一些基础知识和信号处理算法。</p>
+<h1 id="基础概念"><a href="#基础概念" class="headerlink" title="基础概念"></a>基础概念</h1><p>先来看一类特殊的雷达信号FMCW（frequency  modulated continuous wave），  也就是说信号的频率随着时间变化。如下图所示：</p>
+<img src="/2018/11/17/201811-2018-11-17-mmWave-radar-basic/chirp_signal.jpg">
+<p>这种信号也叫作chirp信号，  比如在时间$T_c$ = $40\mu s$内，  信号频率从77GHz变化到81GHz， 如图所示：</p>
+<img src="/2018/11/17/201811-2018-11-17-mmWave-radar-basic/chirp_rate.jpg">
+<script type="math/tex; mode=display">
+S = \frac{B}{T_c}= \frac{4GHz}{40\mu s}=100MHz/ \mu s</script><p>S就代表了信号频率变化的快慢， 叫做chirp rate。一个FMCW的雷达系统主要是通过发端的天线发送chirp信号， 经过物体反射回来后进行处理。</p>
+<p>在RF的接收端， 有一个混频器， 需要将接收到的信号和发出去的信号进行合成， 产生一个新的信号。  假设混频器额两个输入信号是单音正弦波， 那么混频器的差频率输出就是：</p>
+<script type="math/tex; mode=display">
+X_{out} = sin[(\omega_1 - \omega_2)t  + (\phi_1 - \phi_2)]</script><img src="/2018/11/17/201811-2018-11-17-mmWave-radar-basic/radar_system.jpg">
+<p>混频器的工作过程也可以用图形来表示：</p>
+<img src="/2018/11/17/201811-2018-11-17-mmWave-radar-basic/mixer.jpg">
+<p>如果不考虑物体的移动和其他信道的非理想特性， 中频输出就是一个正弦波：</p>
+<script type="math/tex; mode=display">
+Asin(2\pi f_0t + \phi_0)</script><p>因为$\tau = 2d/c$,  那么$f_0 =  S \times 2d/c$.     如果有多个物体， 那么接收回来的信号就变成：</p>
+
+<p>这个包含多个单音信号的 IF 信号必须使用傅里叶变换加以处理，以便分离不同的-单音。傅里叶变换处理将会产生一个具有不同的分离峰值的频谱，每个峰值表示在特定距离处存在物体。</p>
+<h1 id="距离分辨率"><a href="#距离分辨率" class="headerlink" title="距离分辨率"></a>距离分辨率</h1><p>通过延长IF信号的观测时间可以提高频率分辨率。  即：</p>
+<script type="math/tex; mode=display">
+\Delta f > \frac {1} {T_c}</script><p>其中$T_c$是观测时间。由于:</p>
+<script type="math/tex; mode=display">
+\Delta f = \frac {S 2\Delta d} {c}</script><p>所以：</p>
+<script type="math/tex; mode=display">
+\Delta d >  \frac {c} {2ST_c} = \frac {c} {2B}</script><p>B是chirp信号的带宽， 因此，线性调频脉冲带宽为数 GHz 的 FMCW 雷达将有约为数厘米的距离分辨率（例如，4GHz 的线性调频脉冲带宽可转化为 3.75cm 的距离分辨率） [1].</p>
+<h1 id="速度测量"><a href="#速度测量" class="headerlink" title="速度测量"></a>速度测量</h1><ol>
+<li>单个物体的速度测量</li>
+</ol>
+<p>为了测量速度，  FCMW雷达可以发送两个间隔时间为$T_c$的chirp信号，  FFT处理后便可以检测物体的距离。  两个chirp信号对应的FFT处理后的峰值位置相同但是相位不同：</p>
+<img src="/2018/11/17/201811-2018-11-17-mmWave-radar-basic/speed.jpg">
+<script type="math/tex; mode=display">
+\Delta \phi = \frac {4\pi v T_c} {\lambda}</script><p>那么物体的速率就是：</p>
+<script type="math/tex; mode=display">
+v = \frac {\lambda \Delta \phi} {4\pi T_c}</script><ol>
+<li>多个物体速度的测量</li>
+</ol>
+<p>如果检测同一个距离下多个物体的速度，距离FFT 会产生单个峰值，该峰值表示来自所有这些距离相同的物体的合并信号。简单的相位比较技术将不起作用。</p>
+<p>在这种情况下，为了测量速度，雷达系统必须发射两个以上的线性调频脉冲。它发射一组 N 个等间隔线性调频脉冲， 称之为chirp  frame</p>
+<img src="/2018/11/17/201811-2018-11-17-mmWave-radar-basic/chirp_frame.jpg">
+<p>距离FFT处理反射回来的N个信号， 在相同的位置产生峰值， 但是有不同的相位：</p>
+<img src="/2018/11/17/201811-2018-11-17-mmWave-radar-basic/phasor.jpg">
+<p>第二级FFT（也叫Doppler FFT）进行处理后， 就可以分辨相位信息， 从而计算出两个物体的速度。</p>
+<h1 id="角度估计"><a href="#角度估计" class="headerlink" title="角度估计"></a>角度估计</h1><p>FMCW雷达可以使用水平面估算反射信号的角度（AoA）。角度估算的基本原理如下：  物体具体很小的变化即可导致距离 FFT 或多普勒 FFT 峰值的相位变化。 如下图所示， 物体与两个天线的距离差回导致FFT峰值的变化， 进而可以估计出AoA</p>
+
+<script type="math/tex; mode=display">
+\Delta \phi=\frac {2\pi \Delta d} {\lambda}</script><p>假设在平面波的前提下： $\Delta d =  l sin(\theta)$， 其中l是天线之间的距离， 那么AoA就可以计算出来：</p>
+<script type="math/tex; mode=display">
+\theta = sin^{-1}(\frac {\lambda \Delta\phi} {2\pi l})</script><h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p>[1] Cesar Iovescu,  Sandeep Rao,  TI,  The fundamental of mmWave radar sensor. </p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/mmwave/" rel="tag"># mmwave</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/12/201811-2018-11-12-FPGA-scripts/" rel="next" title="FPGA验证有用的脚本">
+                <i class="fa fa-chevron-left"></i> FPGA验证有用的脚本
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="asicwhale" />
+          <p class="site-author-name" itemprop="name">asicwhale</p>
+           
+              <p class="site-description motion-element" itemprop="description">nonw</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">39</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#基础概念"><span class="nav-number">1.</span> <span class="nav-text">基础概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#距离分辨率"><span class="nav-number">2.</span> <span class="nav-text">距离分辨率</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#速度测量"><span class="nav-number">3.</span> <span class="nav-text">速度测量</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#角度估计"><span class="nav-number">4.</span> <span class="nav-text">角度估计</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考文献"><span class="nav-number">5.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">asicwhale</span>
+</div>
+
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>
